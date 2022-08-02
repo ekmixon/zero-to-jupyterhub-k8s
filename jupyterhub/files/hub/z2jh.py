@@ -34,11 +34,10 @@ def _get_config_value(key):
     """Load value from the k8s ConfigMap given a key."""
 
     path = f"/usr/local/etc/jupyterhub/config/{key}"
-    if os.path.exists(path):
-        with open(path) as f:
-            return f.read()
-    else:
+    if not os.path.exists(path):
         raise Exception(f"{path} not found!")
+    with open(path) as f:
+        return f.read()
 
 
 @lru_cache()

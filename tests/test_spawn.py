@@ -19,7 +19,7 @@ def test_spawn_basic(
     """
 
     print("asking kubespawner to spawn a server for a test user")
-    r = api_request.post("/users/" + jupyter_user + "/server")
+    r = api_request.post(f"/users/{jupyter_user}/server")
     assert r.status_code in (201, 202)
     try:
         # check successfull spawn
@@ -51,7 +51,8 @@ def test_spawn_basic(
         )
         assert (
             c.returncode == 0
-        ), f"singleuser.extraEnv didn't lead to a mounted environment variable!"
+        ), "singleuser.extraEnv didn't lead to a mounted environment variable!"
+
 
         # check user pod's extra files
         c = subprocess.run(
@@ -67,7 +68,8 @@ def test_spawn_basic(
         )
         assert (
             c.returncode == 0
-        ), f"The singleuser.extraFiles configuration doesn't seem to have been honored!"
+        ), "The singleuser.extraFiles configuration doesn't seem to have been honored!"
+
     finally:
         _delete_server(api_request, jupyter_user, request_data["test_timeout"])
 
@@ -82,7 +84,7 @@ def test_spawn_netpol(api_request, jupyter_user, request_data):
     print(
         "asking kubespawner to spawn a server for a test user to test network policies"
     )
-    r = api_request.post("/users/" + jupyter_user + "/server")
+    r = api_request.post(f"/users/{jupyter_user}/server")
     assert r.status_code in (201, 202)
     try:
         # check successfull spawn
@@ -198,7 +200,7 @@ def _wait_for_user_to_spawn(api_request, jupyter_user, timeout):
     while time.time() < endtime:
         # NOTE: If this request fails with a 503 response from the proxy, the
         #       hub pod has probably crashed by the tests interaction with it.
-        r = api_request.get("/users/" + jupyter_user)
+        r = api_request.get(f"/users/{jupyter_user}")
         r.raise_for_status()
         user_model = r.json()
 
@@ -218,12 +220,12 @@ def _wait_for_user_to_spawn(api_request, jupyter_user, timeout):
 def _delete_server(api_request, jupyter_user, timeout):
     # NOTE: If this request fails with a 503 response from the proxy, the hub
     #       pod has probably crashed by the previous tests' interaction with it.
-    r = api_request.delete("/users/" + jupyter_user + "/server")
+    r = api_request.delete(f"/users/{jupyter_user}/server")
     assert r.status_code in (202, 204)
 
     endtime = time.time() + timeout
     while time.time() < endtime:
-        r = api_request.get("/users/" + jupyter_user)
+        r = api_request.get(f"/users/{jupyter_user}")
         r.raise_for_status()
         user_model = r.json()
         if "" not in user_model["servers"]:

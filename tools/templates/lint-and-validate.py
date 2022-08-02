@@ -30,12 +30,10 @@ def check_call(cmd, **kwargs):
         subprocess.check_call(cmd, **kwargs)
     except subprocess.CalledProcessError as e:
         print(
-            "`{}` exited with status {}".format(
-                " ".join(map(pipes.quote, cmd)),
-                e.returncode,
-            ),
+            f'`{" ".join(map(pipes.quote, cmd))}` exited with status {e.returncode}',
             file=sys.stderr,
         )
+
         sys.exit(e.returncode)
 
 
@@ -50,13 +48,7 @@ def lint(yamllint_config, values, output_dir, strict, debug):
             output_dir,
         ]
     )
-    check_call(
-        [
-            "rm",
-            "-rf",
-            output_dir + "/*",
-        ]
-    )
+    check_call(["rm", "-rf", f"{output_dir}/*"])
 
     print("### Linting started")
     print("### 1/3 - helm lint: lint helm templates")

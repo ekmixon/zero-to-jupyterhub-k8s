@@ -117,11 +117,11 @@ def jupyter_user(api_request):
     """
     A temporary unique JupyterHub user
     """
-    username = "testuser-" + str(uuid.uuid4())
-    r = api_request.post("/users/" + username)
+    username = f"testuser-{str(uuid.uuid4())}"
+    r = api_request.post(f"/users/{username}")
     assert r.status_code == 201
     yield username
-    r = api_request.delete("/users/" + username)
+    r = api_request.delete(f"/users/{username}")
     assert r.status_code == 204
 
 

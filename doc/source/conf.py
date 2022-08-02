@@ -56,10 +56,7 @@ def _get_git_ref_from_chartpress_based_version(version):
     1.2.3-beta.1.n123.h1234567, 1.2.3-n123.h1234567, or 1.2.3.
     """
     tag_hash_split = re.split("[\.|-]n\d\d\d\.h", version)
-    if len(tag_hash_split) == 2:
-        return tag_hash_split[1]
-    else:
-        return tag_hash_split[0]
+    return tag_hash_split[1] if len(tag_hash_split) == 2 else tag_hash_split[0]
 
 
 # FIXME: Stop relying on chartpress to modify Chart.yaml (and values.yaml) by
@@ -222,7 +219,7 @@ def parse_schema(d, md=[], depth=0, pre=""):
         depth += 1
         # Create markdown headers for each schema level
         for key, val in d["properties"].items():
-            md.append("(schema_%s)=" % (pre + key))
+            md.append(f"(schema_{pre + key})=")
             md.append("#" * (depth + 1) + " " + pre + key)
             md.append("")
             if "description" in val:
@@ -230,7 +227,7 @@ def parse_schema(d, md=[], depth=0, pre=""):
                     md.append(ln)
                 md.append("")
 
-            parse_schema(val, md, depth, pre + "{}.".format(key))
+            parse_schema(val, md, depth, pre + f"{key}.")
         depth -= 1
     return md
 

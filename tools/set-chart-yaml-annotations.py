@@ -27,7 +27,7 @@ def find_images(values, images=None):
     Searches through values.yaml for images and their tags and returns a list of
     "<image>:<tag>" strings.
     """
-    if images == None:
+    if images is None:
         images = []
 
     for k, v in values.items():

@@ -110,8 +110,7 @@ def freeze(build, upgrade, upgrade_package):
     if upgrade:
         upgrade_args.append("--upgrade")
     for pkg in upgrade_package:
-        upgrade_args.append("--upgrade-package")
-        upgrade_args.append(pkg)
+        upgrade_args.extend(("--upgrade-package", pkg))
     check_call(
         [
             "docker",

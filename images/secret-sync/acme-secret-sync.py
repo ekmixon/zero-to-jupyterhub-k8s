@@ -61,14 +61,13 @@ def update_secret(namespace, secret_name, labels, key, value):
     try:
         secret = v1.read_namespaced_secret(namespace=namespace, name=secret_name)
     except client.rest.ApiException as e:
-        if e.status == 404:
-            secret = client.V1Secret(
-                metadata=client.V1ObjectMeta(name=secret_name, labels=labels), data={}
-            )
-            resp = v1.create_namespaced_secret(namespace=namespace, body=secret)
-            logging.info(f"Created secret {secret_name} since it does not exist")
-        else:
+        if e.status != 404:
             raise
+        secret = client.V1Secret(
+            metadata=client.V1ObjectMeta(name=secret_name, labels=labels), data={}
+        )
+        resp = v1.create_namespaced_secret(namespace=namespace, body=secret)
+        logging.info(f"Created secret {secret_name} since it does not exist")
     # Value should be base64'd string
     new_value = base64.standard_b64encode(value).decode()
     if secret.data is None:
@@ -143,8 +142,9 @@ def main():
             sys.exit(1)
 
     if args.action == "load":
-        value = get_secret_value(args.namespace, args.secret_name, args.key)
-        if value:
+        if value := get_secret_value(
+            args.namespace, args.secret_name, args.key
+        ):
             with open(args.path, "wb") as f:
                 f.write(value)
                 os.fchmod(f.fileno(), 0o600)

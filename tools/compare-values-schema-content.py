@@ -55,17 +55,11 @@ def flatten(d, parent_key="", sep="."):
     items = []
     for k, v in d.items():
         new_key = parent_key + sep + k if parent_key else k
-        if isinstance(v, MutableMapping):
-            if v:
-                items.extend(flatten(v, parent_key=new_key, sep=sep))
-            else:
-                items.append(new_key)
+        if isinstance(v, MutableMapping) and v:
+            items.extend(flatten(v, parent_key=new_key, sep=sep))
         else:
             items.append(new_key)
-    if not parent_key:
-        return set(items)
-    else:
-        return items
+    return items if parent_key else set(items)
 
 
 def run():
